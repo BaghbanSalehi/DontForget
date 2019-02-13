@@ -9,13 +9,20 @@
 import UIKit
 
 class MainTableViewController: UITableViewController {
+    //baraye zakhire kardan data dar device
+    let defaults = UserDefaults.standard
     
     var itemArray = ["a","b","c"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+     
+        if let items = UserDefaults.standard.array(forKey: "DontForgetItems") as? [String] {
+            itemArray = items
+        }
+    
     }
+    
     
     //MARK - Tableview DataSource Methods
     
@@ -53,6 +60,7 @@ class MainTableViewController: UITableViewController {
         
         let action = UIAlertAction (title: "Add Item", style: .default) { (action) in
             self.itemArray.append(textField.text!)
+            self.defaults.set(self.itemArray, forKey: "DontForgetItems")
             self.tableView.reloadData()
         }
         alert.addTextField { (alertText) in
