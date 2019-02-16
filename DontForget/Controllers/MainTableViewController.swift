@@ -9,17 +9,16 @@
 import UIKit
 
 class MainTableViewController: UITableViewController {
-    //baraye zakhire kardan data dar device
-    let defaults = UserDefaults.standard
     
-    var itemArray = ["a","b","c"]
+    var itemArray = [Item]()
+    // zakhire kardan data dar device mahal e documents ro midim va plist o misazim
+    let dataFilePth = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadData()
      
-        if let items = UserDefaults.standard.array(forKey: "DontForgetItems") as? [String] {
-            itemArray = items
-        }
+        
     
     }
     
@@ -32,7 +31,11 @@ class MainTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier:  "ToDoItemCell" , for: indexPath)
-        cell.textLabel?.text = itemArray[indexPath.row]
+        let item = itemArray[indexPath.row]
+        cell.textLabel?.text = item.title
+        
+        cell.accessoryType = item.done ? .checkmark : .none // value = condition ? valueIfTrue : valueIfFlase
+        
         return cell
     }
     
@@ -40,14 +43,11 @@ class MainTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark
-        {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        }
-        else
-        {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        saveData()
+        
+    
+    
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
@@ -59,9 +59,12 @@ class MainTableViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction (title: "Add Item", style: .default) { (action) in
-            self.itemArray.append(textField.text!)
-            self.defaults.set(self.itemArray, forKey: "DontForgetItems")
-            self.tableView.reloadData()
+            
+            let newItem = Item()
+            newItem.title = textField.text!
+            self.itemArray.append(newItem)
+            self.saveData()
+
         }
         alert.addTextField { (alertText) in
             alertText.placeholder = "Create New Item"
@@ -71,6 +74,33 @@ class MainTableViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
         
         
+    }
+    
+    //MARK - Model Manupulation Methods
+    
+    func saveData()
+    {
+        let encoder = PropertyListEncoder()
+        do{
+        let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePth!)
+        }catch{
+            print("error saving data : \(error) ")
+        }
+        tableView.reloadData()
+    }
+    func loadData()
+    {
+        if let data = try? Data(contentsOf: dataFilePth!){
+            
+            let decoder = PropertyListDecoder()
+            do{
+            itemArray = try decoder.decode([Item].self, from: data)
+            }catch{
+                print("loading data failed : \(error)")
+            }
+            
+        }
     }
     
 }
