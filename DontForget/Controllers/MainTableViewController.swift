@@ -7,16 +7,19 @@
 //
 
 import UIKit
+import CoreData
 
 class MainTableViewController: UITableViewController {
     
     var itemArray = [Item]()
     // zakhire kardan data dar device mahal e documents ro midim va plist o misazim
     let dataFilePth = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
+    // sakhtan ye context be surate object az appdelegate 
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadData()
+       loadData()
      
         
     
@@ -60,10 +63,12 @@ class MainTableViewController: UITableViewController {
         
         let action = UIAlertAction (title: "Add Item", style: .default) { (action) in
             
-            let newItem = Item()
+            let newItem = Item(context: self.context)
             newItem.title = textField.text!
+            newItem.done = false
             self.itemArray.append(newItem)
             self.saveData()
+            
 
         }
         alert.addTextField { (alertText) in
@@ -80,27 +85,25 @@ class MainTableViewController: UITableViewController {
     
     func saveData()
     {
-        let encoder = PropertyListEncoder()
         do{
-        let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePth!)
+            try context.save()
+
         }catch{
-            print("error saving data : \(error) ")
+            print("error saving context : \(error) ")
         }
         tableView.reloadData()
     }
     func loadData()
     {
-        if let data = try? Data(contentsOf: dataFilePth!){
-            
-            let decoder = PropertyListDecoder()
-            do{
-            itemArray = try decoder.decode([Item].self, from: data)
-            }catch{
-                print("loading data failed : \(error)")
-            }
-            
+        let request : NSFetchRequest<Item> = Item.fetchRequest() // sakht darkhast fetch kardan data
+        do
+        {
+            itemArray = try context.fetch(request) // zakhire javabe darkhast fetch tavasote context dakhel arayamun
+        }catch
+        {
+            print("fetch faild : \(error)")
         }
+        
     }
     
 }
