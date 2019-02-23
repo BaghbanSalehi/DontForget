@@ -10,23 +10,26 @@ import UIKit
 import CoreData
 
 class MainTableViewController: UITableViewController {
-    
+    var selectedCategory : Category? {
+        didSet{
+            loadData()
+        }
+    }
     var itemArray = [Item]()
     // zakhire kardan data dar device mahal e documents ro midim va plist o misazim
-    let dataFilePth = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
+   // let dataFilePth = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
     // sakhtan ye context be surate object az appdelegate 
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       loadData()
      
         
     
     }
     
     
-    //MARK - Tableview DataSource Methods
+    //MARK: - Tableview DataSource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
@@ -42,7 +45,7 @@ class MainTableViewController: UITableViewController {
         return cell
     }
     
-    //MARK - TableView Delegate Method
+    //MARK: - TableView Delegate Method
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -54,7 +57,7 @@ class MainTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
-    //MARK - add new items
+    //MARK: - add new items
     
     @IBAction func addItemPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
@@ -66,6 +69,7 @@ class MainTableViewController: UITableViewController {
             let newItem = Item(context: self.context)
             newItem.title = textField.text!
             newItem.done = false
+            newItem.parentCategory = self.selectedCategory // taen relation ship itemjadid ba category ke umade
             self.itemArray.append(newItem)
             self.saveData()
             
@@ -81,7 +85,7 @@ class MainTableViewController: UITableViewController {
         
     }
     
-    //MARK - Model Manupulation Methods
+    //MARK: - Model Manupulation Methods
     
     func saveData()
     {
@@ -93,9 +97,23 @@ class MainTableViewController: UITableViewController {
         }
         tableView.reloadData()
     }
-    func loadData()
+    
+    func loadData(with request : NSFetchRequest<Item> = Item.fetchRequest(),predicate : NSPredicate? = nil)
     {
-        let request : NSFetchRequest<Item> = Item.fetchRequest() // sakht darkhast fetch kardan data
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        // bara inke predicate ha ro ham neveshte nashe az compundpredicate use kardim ta predicate category az search joda she
+//        let compundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,predicate])
+//        request.predicate = compundPredicate
+        // vase inke loadData() bedune vorody predicate farakhani she predicate ro optional nil kardim bara safe sazi :
+        if let additionalPredicate = predicate {
+            
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
+        }else{
+            request.predicate = categoryPredicate
+        }// age predicate az searchbar umade bud compund predicate ba category o search bar age na faghat categorypredicate
+        
+        
         do
         {
             itemArray = try context.fetch(request) // zakhire javabe darkhast fetch tavasote context dakhel arayamun
@@ -103,8 +121,38 @@ class MainTableViewController: UITableViewController {
         {
             print("fetch faild : \(error)")
         }
+        tableView.reloadData()
         
     }
+    
+}
+
+//MARK: - Search Bar Methedos
+extension MainTableViewController : UISearchBarDelegate
+{
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        let predicate = NSPredicate(format: "title CONTAINS [cd] %@", searchBar.text!)//moghayese dade ke az db umade ba chizi ke user zade
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]//sort kardan natije dastan,araye pazire faghat in
+        loadData(with : request,predicate: predicate)
+        
+        
+    }
+    // in tabe vaghty ke dakhel searchbar yek kalame ezafe ya kam she
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text?.count == 0
+        {
+            loadData()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder() // az olaviat bardashte mishe searchbar 
+            }
+        }
+        
+    }
+    
     
 }
 

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E428BB792219912E00898B30 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E428BB772219912E00898B30 /* DataModel.xcdatamodeld */; };
+		E4E833B8221DBA5C005C55AC /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E833B7221DBA5C005C55AC /* CategoryTableViewController.swift */; };
 		E4F2902C2212BEFC005A4A14 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F2902B2212BEFC005A4A14 /* AppDelegate.swift */; };
 		E4F2902E2212BEFC005A4A14 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F2902D2212BEFC005A4A14 /* MainTableViewController.swift */; };
 		E4F290312212BEFC005A4A14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E4F2902F2212BEFC005A4A14 /* Main.storyboard */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		E428BB782219912E00898B30 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		E4E833B7221DBA5C005C55AC /* CategoryTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
 		E4F290282212BEFC005A4A14 /* DontForget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DontForget.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4F2902B2212BEFC005A4A14 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E4F2902D2212BEFC005A4A14 /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
@@ -48,6 +50,7 @@
 		E42A89BB22180941000D4407 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				E4E833B7221DBA5C005C55AC /* CategoryTableViewController.swift */,
 				E4F2902D2212BEFC005A4A14 /* MainTableViewController.swift */,
 			);
 			path = Controllers;
@@ -173,6 +176,7 @@
 				E4F2902E2212BEFC005A4A14 /* MainTableViewController.swift in Sources */,
 				E428BB792219912E00898B30 /* DataModel.xcdatamodeld in Sources */,
 				E4F2902C2212BEFC005A4A14 /* AppDelegate.swift in Sources */,
+				E4E833B8221DBA5C005C55AC /* CategoryTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
