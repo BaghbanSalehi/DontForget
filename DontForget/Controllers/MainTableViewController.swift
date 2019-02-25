@@ -7,19 +7,16 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class MainTableViewController: UITableViewController {
+    let realm = try! Realm()
     var selectedCategory : Category? {
         didSet{
             loadData()
         }
     }
-    var itemArray = [Item]()
-    // zakhire kardan data dar device mahal e documents ro midim va plist o misazim
-   // let dataFilePth = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
-    // sakhtan ye context be surate object az appdelegate 
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var todoItems : Results<Item>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,15 +29,21 @@ class MainTableViewController: UITableViewController {
     //MARK: - Tableview DataSource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return todoItems?.count ?? 1
     }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier:  "ToDoItemCell" , for: indexPath)
-        let item = itemArray[indexPath.row]
+        // age todoItems nil nabud va kole dastan nil nabud
+        if let item = todoItems?[indexPath.row] {
         cell.textLabel?.text = item.title
-        
         cell.accessoryType = item.done ? .checkmark : .none // value = condition ? valueIfTrue : valueIfFlase
+        }
+        else
+        {
+            cell.textLabel?.text = "No Items Added"
+        }
         
         return cell
     }
@@ -49,10 +52,20 @@ class MainTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        saveData()
+        if let item = todoItems?[indexPath.row] {
+            
+            do{
+                try realm.write {
+                    item.done = !item.done
+                }
+                
+            }catch{
+                print("error updating data \(error)")
+            }
+        }
+        tableView.reloadData()
         
-    
+
     
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -65,13 +78,25 @@ class MainTableViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction (title: "Add Item", style: .default) { (action) in
+        
+            if let currentCategory = self.selectedCategory
+            {
+                do{
+                    try self.realm.write {
+                        
+                        let newItem = Item()
+                        newItem.title = textField.text!
+                        newItem.dateCreated = Date()
+                        currentCategory.items.append(newItem) // taen relation ship itemjadid ba category ke umade
+                    }
             
-            let newItem = Item(context: self.context)
-            newItem.title = textField.text!
-            newItem.done = false
-            newItem.parentCategory = self.selectedCategory // taen relation ship itemjadid ba category ke umade
-            self.itemArray.append(newItem)
-            self.saveData()
+                }catch{
+                    print("error saving items \(error)")
+                }
+                self.tableView.reloadData()
+            }
+            
+          
             
 
         }
@@ -87,40 +112,12 @@ class MainTableViewController: UITableViewController {
     
     //MARK: - Model Manupulation Methods
     
-    func saveData()
-    {
-        do{
-            try context.save()
-
-        }catch{
-            print("error saving context : \(error) ")
-        }
-        tableView.reloadData()
-    }
     
-    func loadData(with request : NSFetchRequest<Item> = Item.fetchRequest(),predicate : NSPredicate? = nil)
+    
+    func loadData()
     {
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-        // bara inke predicate ha ro ham neveshte nashe az compundpredicate use kardim ta predicate category az search joda she
-//        let compundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,predicate])
-//        request.predicate = compundPredicate
-        // vase inke loadData() bedune vorody predicate farakhani she predicate ro optional nil kardim bara safe sazi :
-        if let additionalPredicate = predicate {
-            
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
-        }else{
-            request.predicate = categoryPredicate
-        }// age predicate az searchbar umade bud compund predicate ba category o search bar age na faghat categorypredicate
-        
-        
-        do
-        {
-            itemArray = try context.fetch(request) // zakhire javabe darkhast fetch tavasote context dakhel arayamun
-        }catch
-        {
-            print("fetch faild : \(error)")
-        }
+        todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+
         tableView.reloadData()
         
     }
@@ -132,12 +129,9 @@ extension MainTableViewController : UISearchBarDelegate
 {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        let predicate = NSPredicate(format: "title CONTAINS [cd] %@", searchBar.text!)//moghayese dade ke az db umade ba chizi ke user zade
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]//sort kardan natije dastan,araye pazire faghat in
-        loadData(with : request,predicate: predicate)
-        
+        // peyda kardan va sort kardan item zade shode
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@",searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        tableView.reloadData()
         
     }
     // in tabe vaghty ke dakhel searchbar yek kalame ezafe ya kam she
@@ -155,4 +149,7 @@ extension MainTableViewController : UISearchBarDelegate
     
     
 }
+
+
+
 
