@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		504EC58C60A07B5E6F627ABB /* Pods_DontForget.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A186F3AB400772F9933C0D /* Pods_DontForget.framework */; };
+		E44716F52225756D0048B016 /* SwipeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44716F42225756D0048B016 /* SwipeViewController.swift */; };
 		E4E833B8221DBA5C005C55AC /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E833B7221DBA5C005C55AC /* CategoryTableViewController.swift */; };
 		E4EAA3AF2224252800D13CDF /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EAA3AE2224252800D13CDF /* Category.swift */; };
 		E4EAA3B12224253600D13CDF /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EAA3B02224253600D13CDF /* Item.swift */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		1D70E467C0BD6EC64F4346D8 /* Pods-DontForget.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DontForget.release.xcconfig"; path = "Pods/Target Support Files/Pods-DontForget/Pods-DontForget.release.xcconfig"; sourceTree = "<group>"; };
 		70A186F3AB400772F9933C0D /* Pods_DontForget.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DontForget.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E44716F42225756D0048B016 /* SwipeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeViewController.swift; sourceTree = "<group>"; };
 		E4E833B7221DBA5C005C55AC /* CategoryTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
 		E4EAA3AE2224252800D13CDF /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		E4EAA3B02224253600D13CDF /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 			children = (
 				E4E833B7221DBA5C005C55AC /* CategoryTableViewController.swift */,
 				E4F2902D2212BEFC005A4A14 /* MainTableViewController.swift */,
+				E44716F42225756D0048B016 /* SwipeViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-DontForget/Pods-DontForget-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
 				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
@@ -238,6 +242,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -256,6 +261,7 @@
 				E4F2902C2212BEFC005A4A14 /* AppDelegate.swift in Sources */,
 				E4E833B8221DBA5C005C55AC /* CategoryTableViewController.swift in Sources */,
 				E4EAA3AF2224252800D13CDF /* Category.swift in Sources */,
+				E44716F52225756D0048B016 /* SwipeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

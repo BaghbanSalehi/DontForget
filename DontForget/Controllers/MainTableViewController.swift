@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class MainTableViewController: UITableViewController {
+class MainTableViewController: SwipeViewController {
     let realm = try! Realm()
     var selectedCategory : Category? {
         didSet{
@@ -20,6 +20,7 @@ class MainTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.rowHeight = 80
      
         
     
@@ -34,7 +35,7 @@ class MainTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier:  "ToDoItemCell" , for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         // age todoItems nil nabud va kole dastan nil nabud
         if let item = todoItems?[indexPath.row] {
         cell.textLabel?.text = item.title
@@ -122,6 +123,22 @@ class MainTableViewController: UITableViewController {
         
     }
     
+    // Delete Items inja por mishe dakhel superclass emun anjam mishe
+    override func updateModel(at indexPath: IndexPath) {
+        if let categoryDeletion = self.todoItems?[indexPath.row]{
+            do{
+                try self.realm.write {
+                    self.realm.delete(categoryDeletion)
+                }
+                
+            }catch{
+                print("error deleting")
+            }
+            
+            
+            
+        }
+    }
 }
 
 //MARK: - Search Bar Methedos
